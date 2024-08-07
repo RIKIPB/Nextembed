@@ -1,0 +1,16 @@
+{
+    "name": "nextcloud/nextembed",
+    "description": "Nextembed",
+    "type": "project",
+    "authors": [
+        {
+            "name": "RIKIPB",
+            "email": "your.email@example.com",
+            "homepage": "https://yourhomepage.example.com"  // Assicurati che questo sia un URL valido
+        }
+    ],
+    "require": {
+        "phpoffice/phpword": "^0.18.2",
+        "phpoffice/phpspreadsheet": "^1.17"
+    }
+}

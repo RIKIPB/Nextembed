@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>nextembed</id>
+	<name>Nextembed</name>
+	<summary>Create embed code for files</summary>
+	<description>The Nextembed app for Nextcloud allows users to generate embed codes for their files, making it easy to share content across other websites. With this app, you can create custom embed codes for images, videos, and documents hosted on your Nextcloud instance. Simply input the file URL, and the app generates an iframe code that can be inserted into any webpage. This feature enables seamless integration and display of Nextcloud files on external sites without requiring user authentication. Ideal for sharing media and documents publicly or within restricted environments.</description>
+	<version>1.0.0</version>
+	<licence>agpl</licence>
+	<author mail="tayler991@outlook.it" homepage="">RIKIPB</author>
+	<namespace>Nextembed</namespace>
+	<category>multimedia</category>
+	<bugs>https://weblynote.com/</bugs>
+	<dependencies>
+		<nextcloud min-version="21" max-version="29"/>
+	</dependencies>
+	<navigations>
+		<navigation>
+			<id>nextembed</id>
+			<name>Nextembed</name>
+			<route>nextembed.page.index</route>
+			<icon>app.svg</icon>
+			<type>link</type>
+		</navigation>
+	</navigations>
+</info>
