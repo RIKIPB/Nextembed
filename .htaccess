@@ -1,0 +1,5 @@
+# Disabilita X-Frame-Options
+Header unset X-Frame-Options
+
+# Permette a qualsiasi origine di includere il contenuto in un iframe
+Header set Content-Security-Policy "frame-ancestors *;"

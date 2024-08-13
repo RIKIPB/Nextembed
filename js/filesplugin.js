@@ -1,7 +1,30 @@
 (function() {
   //Now i create the popup container
   const FPP_popup = document.createElement('div');
-  $(FPP_popup).addClass('nextembed_popup bubble').html(`<textarea></textarea>`);
+  $(FPP_popup).addClass('nextembed_popup bubble');
+
+  // Crea il bottone di chiusura
+  const closeButton = document.createElement('div');
+  $(closeButton).addClass('nextembed_close_btn');
+
+  // Crea e aggiungi lo span al bottone di chiusura
+  const closeButtonIcon = document.createElement('span');
+  $(closeButtonIcon).addClass('icon-close');
+  $(closeButton).append(closeButtonIcon);
+
+  // Collega l'evento click al bottone di chiusura
+  $(closeButton).on('click', nextembed_close_popup);
+
+  // Crea e aggiungi l'area di testo
+  const textArea = document.createElement('textarea');
+
+  // Aggiungi gli elementi al popup
+  $(FPP_popup).append(closeButton, textArea);
+
+  // Aggiungi il popup al body
+  $('body').append(FPP_popup);
+
+  // Aggiungi il popup al body
   $('body').append(FPP_popup);
 
   //Nextcloud get current user username
@@ -55,18 +78,50 @@
     actionHandler: function(filename, context) {
       // Replace this with your actual implementation
       const fileId = context.$file.data('id');
+
+      createPublicLink(fileId, function(token) {
         
-      //Mostro già il popup
-      $('.nextembed_popup')
-      .css({ top: `10%`, left: `${($(window).width()/2 -  $('.nextembed_popup').width()/2)}px`, display: 'block'})
-      .find('textarea')
-      .text(`<iframe  width="100%" height="100%" src="${OC.getProtocol()}://${OC.getHostName()}${OC.generateUrl('apps/nextembed/api/0.1/embedfile?fileId=')}${fileId}" title="${filename}"></iframe>`);
+        //Mostro già il popup
+        $('.nextembed_popup')
+        .css({ top: `10%`, left: `${($(window).width()/2 -  $('.nextembed_popup').width()/2)}px`, display: 'block'})
+        .find('textarea')                                                                   //OC.generateUrl('apps/nextembed/nextembed.php?token=')
+        .text(`<iframe  width="100%" height="100%" src="${OC.getProtocol()}://${OC.getHostName()}/apps/nextembed/nextembed.php?token=${token}" title="${filename}"></iframe>`);
+      });
+        
+      
     },
   });
+
+  function createPublicLink(fileId, callback) {
+    $.ajax({
+      url: OC.generateUrl(`apps/nextembed/api/0.1/tokenizeFile/${fileId}`),
+      method: 'GET',     
+      dataType: 'json',
+      headers: {
+        'OCS-APIREQUEST': true,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(response) {
+        if (response.fileToken) {
+          callback(response.fileToken);
+        } else {
+          console.error('Failed to create public link:', response);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Error creating public link:', error);
+      }
+    });
+  }
+  
 })();
 
 function exist(elm) {
   if(elm !== null && elm !== undefined)
     return true;
   return false;
+}
+
+function nextembed_close_popup() {
+  $('.nextembed_popup').hide().find('textarea').val('');
 }

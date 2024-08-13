@@ -48,3 +48,21 @@
     position: relative;
     resize: none;
 }
+
+.nextembed_close_btn {
+    z-index: 99999;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0px;
+    background-color: #353333;
+    right: 0px;
+    cursor:pointer;
+}
+
+.nextembed_close_btn span {
+    display: block;
+    width: 30px;
+    height: 30px;
+    cursor:pointer;
+}
