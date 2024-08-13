@@ -24,7 +24,7 @@ class Application extends App {
 		$eventDispatcher->addListener(LoadAdditionalScriptsEvent::class, function () {
 			// this loads the js/filesplugin.js script once the Files app has done loading its scripts
 			Util::addscript(self::APP_ID, 'filesplugin', 'files');
-			Util::addStyle(self::APP_ID, 'fpp-style');
+			Util::addStyle(self::APP_ID, 'nextembed-style');
 		});
 	}
 }

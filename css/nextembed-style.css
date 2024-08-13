@@ -1,7 +1,8 @@
-.fpp-pupup {
+.nextembed_popup {
     display: none;
-    width: 330px;
-    height: 390px;    
+    width: 40vw;
+    min-width: 578px;
+    height: 134px;
     z-index: 9999;
     background-position: center center;
     background-repeat: no-repeat;
@@ -9,11 +10,12 @@
     overflow: hidden;
 }
 
-.fpp-pupup.bubble:before {
+.nextembed_popup.bubble:before {
     color: red;
+    position: absolute;
     line-height: 31px;
     opacity: .3;
-    transform: rotate(45deg);
+    transform: rotate(358deg);
     content: "Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - Only for testing purpouse - ";
 }
 
@@ -35,6 +37,14 @@
     border-width: 9px;
 }
 
-.fpp-pupup #fpp-preview-loading {
+.nextembed_popup #fpp-preview-loading {
     margin-top: 50%;
+}
+
+.nextembed_popup textarea{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    position: relative;
+    resize: none;
 }

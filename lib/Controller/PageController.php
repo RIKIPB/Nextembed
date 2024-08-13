@@ -94,7 +94,8 @@ class PageController extends Controller {
         // Genera le immagini di anteprima
         $previewPaths = $this->generatePreview($filePath, $fileExtension);
 
-        if ($previewPaths && count($previewPaths) > 0) {
+        if ($previewPaths && count($previewPaths) > 0) {   
+
             // Crea l'HTML per visualizzare le immagini di anteprima
             $html = '<html><body>';
             foreach ($previewPaths as $path) {
@@ -119,7 +120,7 @@ class PageController extends Controller {
      * @param string $fileExtension
      * @return array
      */
-    private function generatePreviewImages($filePath) {
+    private function generatePreviewImages($filePath, $deletePreview = false) {
         $previewBase64 = [];
         
         // Usa finfo per ottenere il tipo MIME del file
@@ -129,14 +130,14 @@ class PageController extends Controller {
         // Gestione dei file PDF
         if ($mimeType === 'application/pdf') {
             $pdf = new \Imagick($filePath);
-            $pdf->setResolution(300, 300); // Imposta una risoluzione più alta
+            $pdf->setResolution(600, 600); // Imposta una risoluzione più alta
     
             foreach ($pdf as $i => $page) {
-                $page->setImageFormat('jpeg'); // Usa JPEG per ridurre il peso
-                $page->setImageCompressionQuality(90); // Imposta la qualità dell'immagine JPEG
+                $page->setImageFormat('png'); // Usa JPEG per ridurre il peso
+                $page->setResolution(600,600);
                 $imageData = $page->getImageBlob(); // Ottieni i dati binari dell'immagine
                 $base64 = base64_encode($imageData); // Converti i dati in base64
-                $previewBase64[] = 'data:image/jpeg;base64,' . $base64;
+                $previewBase64[] = 'data:image/png;base64,' . $base64;
             }
     
             $pdf->clear();
@@ -153,6 +154,11 @@ class PageController extends Controller {
             $image->destroy();
         }
         // Aggiungi logica per altri tipi di file se necessario
+
+        //I check if the preview pdf must be deleted
+        if($deletePreview) {
+            unlink($filePath);
+        }
     
         return $previewBase64;
     }
@@ -166,43 +172,87 @@ class PageController extends Controller {
      * @return DataResponse
      */
     private function generatePreview($filePath, $fileExtension) {
-        $previewDir = \OC::$server->getTempManager()->getTemporaryFolder();
-        $previewPath = $previewDir . '/' . uniqid('preview_', true) . '.jpg';
-
+        // $previewDir = \OC::$server->getTempManager()->getTemporaryFolder();
+        // Ottieni la configurazione di Nextcloud
+        $config = \OC::$server->getConfig();
+        // Ottieni la cartella temporanea configurata
+        $previewDir = $config->getSystemValue('tempdirectory', sys_get_temp_dir());
+        $previewPath = $previewDir.'/'.uniqid('previewtodelete_', true) . '.pdf';
+        
         switch (strtolower($fileExtension)) {
             case 'doc':
             case 'docx':
-                return $this->generateWordPreview($filePath, $previewPath);
             case 'xls':
             case 'xlsx':
-                return $this->generateExcelPreview($filePath, $previewPath);
+            case 'odt':
+            case 'odp':
+            case 'ppt':
+            case 'pptx':
+                return $this->generateWordPreview($filePath, $previewPath);            
+            // return $this->generateExcelPreview($filePath, $previewPath);
             // Aggiungi altri formati di file come necessario
             default:
                 return $this->generatePreviewImages($filePath);
         }
     }
 
-    private function generateWordPreview($inputFile, $outputImage) {
-        $pdfFile = tempnam(sys_get_temp_dir(), 'pdf');
-        $this->convertToPDF($inputFile, $pdfFile);
-        $this->generatePreviewImages($pdfFile, $outputImage);
-        unlink($pdfFile);
-        return $outputImage;
+    private function generateWordPreview($inputFile, $pdfFile) {     
+        $conversion = [];   
+        if($this->convertToPDF($inputFile, $pdfFile))
+            $conversion = $this->generatePreviewImages($pdfFile, true);
+        // unlink($pdfFile);
+        return $conversion;
     }
 
-    private function generateExcelPreview($inputFile, $outputImage) {
-        $pdfFile = tempnam(sys_get_temp_dir(), 'pdf');
-        $this->convertToPDF($inputFile, $pdfFile);
-        $this->generatePreviewImages($pdfFile, $outputImage);
-        unlink($pdfFile);
-        return $outputImage;
-    }
+    // private function generateExcelPreview($inputFile, $pdfFile) {
+    //     $conversion = [];
+    //     if($this->convertToPDF($inputFile, $pdfFile))
+    //         $conversion = $this->generatePreviewImages($pdfFile, true);
+    //     // unlink($pdfFile);
+    //     return $conversion;
+    // }
 
-    private function convertToPDF($inputFile, $outputFile) {
-        $command = 'libreoffice --headless --convert-to pdf --outdir ' . escapeshellarg(dirname($outputFile)) . ' ' . escapeshellarg($inputFile);
-        exec($command);
+    private function convertToPDF($inputFile, $outputDir) {
+        $config = \OC::$server->getConfig();
+        // Ottieni la cartella temporanea configurata
+        $previewDir = $config->getSystemValue('tempdirectory', sys_get_temp_dir());
+    
+        if (!file_exists($inputFile)) {
+            echo "Error: input file does not exist.\n";
+            return false;
+        }
+    
+        if (!is_readable($inputFile)) {
+            echo "Error: input file is not readable.\n";
+            return false;
+        }
+    
+        if (!is_writable($previewDir)) {
+            echo "Error: the tmp directory is not writable.\n";
+            return false;
+        }
+    
+        // Comando di conversione
+        $command = 'unoconv --verbose -f pdf -o ' . escapeshellarg($outputDir) . ' ' . escapeshellarg($inputFile);
+    
+        // Esegui il comando e cattura l'output e il codice di ritorno
+        exec($command . ' 2>&1', $output, $returnVar);
+    
+        if(count($output) > 0) {
+            if(strpos($output[0], 'Error') !== false) {
+                echo implode("\n", $output);
+                return false;
+            }
+            return true;
+        }elseif ($returnVar !== 0) {
+            // Errore durante l'esecuzione del comando
+            echo "Errore during the conversion: " . implode("\n", $output) . "\n";
+            return false;
+        }else
+            return true;
     }
-
+   
+    
     private function generatePreviewFromPDF($pdfFile, $outputImage) {
         $imagick = new Imagick();
         $imagick->readImage($pdfFile . '[0]'); // Legge la prima pagina
