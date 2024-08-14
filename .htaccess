@@ -1,5 +1,5 @@
-# Disabilita X-Frame-Options
-Header unset X-Frame-Options
+# Set X-Frame-Options to allow specific domains
+Header set X-Frame-Options "ALLOW-FROM https://example1.com https://example2.com"
 
-# Permette a qualsiasi origine di includere il contenuto in un iframe
-Header set Content-Security-Policy "frame-ancestors *;"
+# Set Content-Security-Policy to allow specific domains
+Header set Content-Security-Policy "frame-ancestors 'self' https://example1.com https://example2.com;"
