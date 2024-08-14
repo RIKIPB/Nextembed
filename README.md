@@ -12,7 +12,7 @@ Nextembed is a Nextcloud app that provides enhanced embedding functionality for 
 2. Enable the app through the Nextcloud admin interface.
 
 ## Usage
-Right Click a File and select '' from the context menu to Copy Embed Code
+Right Click a File and select 'Get Embed Code' from the context menu to Copy Embed Code
 
 -------------------------------------------------------------------------
 
