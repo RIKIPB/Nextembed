@@ -4,7 +4,7 @@ SPDX-License-Identifier: CC0-1.0
 -->
 
 # Nextembed
-Nextembed is a Nextcloud app that provides enhanced embedding functionality for various file types.
+The Nextembed app for Nextcloud allows users to generate embed codes for their files, making it easy to share content across other websites. With this app, you can create custom embed codes for images, videos, and documents hosted on your Nextcloud instance. This feature enables seamless integration and display of Nextcloud files on external sites without requiring user authentication. Ideal for sharing media and documents publicly or within restricted environments
 
 ## Installation
 
