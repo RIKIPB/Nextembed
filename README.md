@@ -8,11 +8,11 @@ The Nextembed app for Nextcloud allows users to generate embed codes for their f
 
 ## Installation
 
-1. Place this app in the `nextcloud/apps/` directory OR `nextcloud/custom_apps` directory for docker AIO Installs
+1. Place this app in the `nextcloud/apps/` directory OR `nextcloud/custom_apps/` directory for docker AIO Installs
 2. Enable the app through the Nextcloud admin interface.
 
 ## Usage
-Right Click a File and select 'Get Embed Code' from the context menu to Copy Embed Code
+Right click a file and select 'Get Embed Code' from the context menu to copy Embed Code
 
 -------------------------------------------------------------------------
 
