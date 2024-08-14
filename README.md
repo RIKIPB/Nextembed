@@ -4,15 +4,15 @@ SPDX-License-Identifier: CC0-1.0
 -->
 
 # Nextembed
-Nextembed is a Nextcloud app that provides enhanced embedding functionality for various file types.
+The Nextembed app for Nextcloud allows users to generate embed codes for their files, making it easy to share content across other websites. With this app, you can create custom embed codes for images, videos, and documents hosted on your Nextcloud instance. This feature enables seamless integration and display of Nextcloud files on external sites without requiring user authentication. Ideal for sharing media and documents publicly or within restricted environments
 
 ## Installation
 
-1. Place this app in the `nextcloud/apps/` directory OR `nextcloud/custom_apps` directory for docker AIO Installs
+1. Place this app in the `nextcloud/apps/` directory OR `nextcloud/custom_apps/` directory for docker AIO Installs
 2. Enable the app through the Nextcloud admin interface.
 
 ## Usage
-Right Click a File and select 'Get Embed Code' from the context menu to Copy Embed Code
+Right click a file and select 'Get Embed Code' from the context menu to copy Embed Code
 
 -------------------------------------------------------------------------
 
