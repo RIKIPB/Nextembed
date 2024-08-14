@@ -3,8 +3,18 @@ SPDX-FileCopyrightText: RIKIPB <dkron@outlook.it>
 SPDX-License-Identifier: CC0-1.0
 -->
 
-# Image Popup Preview
-Place this app in **nextcloud/apps/**
+# Nextembed
+Nextembed is a Nextcloud app that provides enhanced embedding functionality for various file types.
+
+## Installation
+
+1. Place this app in the `nextcloud/apps/` directory OR `nextcloud/custom_apps` directory for docker AIO Installs
+2. Enable the app through the Nextcloud admin interface.
+
+## Usage
+Right Click a File and select '' from the context menu to Copy Embed Code
+
+-------------------------------------------------------------------------
 
 ## Building the app
 
