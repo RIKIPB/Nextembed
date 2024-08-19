@@ -1,4 +1,15 @@
+const black_list_exts = [
+  '.zip',
+  '.exe',
+  '.dll'
+];
+
 (function() {
+
+  $.fn.hasAttr = function(name) {  
+    return this.attr(name) !== undefined;
+  };
+
   //Now i create the popup container
   const FPP_popup = document.createElement('div');
   $(FPP_popup).addClass('nextembed_popup bubble');
@@ -27,94 +38,69 @@
   // Aggiungi il popup al body
   $('body').append(FPP_popup);
 
-  //Nextcloud get current user username
-  const FPP_username = OC.getCurrentUser().uid;  
+  console.log('Nextembed loaded!');
+
+  setInterval(nextembed_checks, 1000);
   
+}) ();
 
-  OCA.Files.fileActions.registerAction({
-    name: 'nextembed_popup',
-    render: (actionSpec, isDefault, context) => {      
-        //Preparo un array di estensioni proibite
-        const FPP_prohibited_extensions = ['md'];
+function nextembed_checks() {
+  $(".files-list__row").each(function( index ) {
+    if(!$(this).hasAttr('nextembed') && $(this).find('.folder-icon').length <= 0 && !black_list_exts.includes($(this).find('.files-list__row-name-ext').html())) {
 
-        //Controllo che l'estensione del file non sia tra quelle proibite
-        const is_proibited = FPP_prohibited_extensions.includes(context.$file.attr('data-file').split('.').pop());
-
-        //Analizzo file per file per vedere se hanno una preview da mostare oppure se è un pdf
-        const has_preview = context.$file.data('has-preview');
-        const is_pdf = context.$file.data('mime').includes('application/pdf');
-
-        if ((has_preview || is_pdf) && !is_proibited)            
-          context.$file.find('a.name>.thumbnail-wrapper').addClass('nextembed_popup-trigger').attr('fpp-id', context.$file.data('id'));
-        return null
-    },
-    mime: 'all',
-    order: -140,
-    type: OCA.Files.FileActions.TYPE_INLINE,
-    permissions: OC.PERMISSION_READ,
-    actionHandler: null,
-  });
-
-  // Register the "Get embed code" action
-  OCA.Files.fileActions.registerAction({
-    name: 'getEmbedCode', // Unique name for the action
-    displayName: t('getEmbedCode', 'get Embed Code'),
-    iconClass: 'icon-link',
-    render: (actionSpec, isDefault, context) => {
-      // Create the menu item
-      const menuItem = $('<a/>')
-        .addClass('action')
-        .text('Get embed code')
-        .on('click', () => {
-          handleEmbedCode(context);
-        });
-
-      return menuItem;
-    },
-    mime: 'all', // This action applies to all file types
-    order: -130, // Position in the menu (adjust as needed)
-    type: OCA.Files.FileActions.TYPE_CONTEXTMENU, // Add it to the context menu
-    permissions: OC.PERMISSION_READ, // Required permissions
-    actionHandler: function(filename, context) {
-      // Replace this with your actual implementation
-      const fileId = context.$file.data('id');
-
-      createPublicLink(fileId, function(token) {
-        
-        //Mostro già il popup
-        $('.nextembed_popup')
-        .css({ top: `10%`, left: `${($(window).width()/2 -  $('.nextembed_popup').width()/2)}px`, display: 'block'})
-        .find('textarea')                                                                   //OC.generateUrl('apps/nextembed/nextembed.php?token=')
-        .text(`<iframe  width="100%" height="100%" src="${OC.getProtocol()}://${OC.getHostName()}/apps/nextembed/nextembed.php?token=${token}" title="${filename}"></iframe>`);
-      });
-        
+      // Test fatti:
+      //Mi assicuro che non sia già sttato elaborato
+      //Mi assicuro che sia un file     
+      //Mi assicuro che non si tratti di un file con estensione in black-list
       
-    },
-  });
 
-  function createPublicLink(fileId, callback) {
-    $.ajax({
-      url: OC.generateUrl(`apps/nextembed/api/0.1/tokenizeFile/${fileId}`),
-      method: 'GET',     
-      dataType: 'json',
-      headers: {
-        'OCS-APIREQUEST': true,
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      success: function(response) {
-        if (response.fileToken) {
-          callback(response.fileToken);
-        } else {
-          console.error('Failed to create public link:', response);
-        }
-      },
-      error: function(xhr, status, error) {
-        console.error('Error creating public link:', error);
-      }
-    });
-  }
-  
-})();
+      // Set the row as processed
+      $(this).attr('nextembed', 1);
+
+      // Create the button element
+      const button = document.createElement('button');
+      button.setAttribute('aria-label', '');
+      button.setAttribute('type', 'button');
+      button.setAttribute('title', 'Get embed code');
+      button.className = 'button-vue button-vue--size-normal button-vue--icon-only button-vue--vue-tertiary action-item action-item--single nextembed-btn';
+
+      // Append the span wrapper to the button
+      $(button).append(`
+        <span data-v-44398b0c="" class="button-vue__wrapper">
+          <span data-v-44398b0c="" aria-hidden="true" class="button-vue__icon">
+            <span data-v-2d0a4d76="" data-v-8bb9b100="" role="img" aria-hidden="true" class="icon-vue" data-v-44398b0c="" style="--icon-size: 20px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8.59,16.59L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.59ZM16.41,16.59L11.83,12L16.41,7.41L15,6L9,12L15,18L16.41,16.59Z"></path>
+              </svg>
+            </span>
+          </span>
+        </span>
+      `);      
+
+      // Append the button
+      $(this).find('.action-items').append(button);
+
+      // Attach the click event
+      const fileId = $(this).attr('data-cy-files-list-row-fileid');
+      button.addEventListener('click', function() {
+        nextembed_generate_embed_code(fileId);
+      });
+
+    }
+  });  
+}
+
+function nextembed_generate_embed_code(fileId) {
+  const filename = $(`tr[data-cy-files-list-row-fileid="${fileId}"]`).find('.files-list__row-name-').html();
+  console.log("Generated embed code for:", filename);
+  createPublicLink(fileId, function(token) {    
+    //Mostro già il popup
+    $('.nextembed_popup')
+      .css({ top: `10%`, left: `${($(window).width()/2 -  $('.nextembed_popup').width()/2)}px`, display: 'block'})
+      .find('textarea')                                                                   //OC.generateUrl('apps/nextembed/nextembed.php?token=')
+      .text(`<iframe  width="100%" height="100%" src="${OC.getProtocol()}://${OC.getHostName()}/apps/nextembed/nextembed.php?token=${token}" title="${filename}"></iframe>`);
+  });
+}
 
 function exist(elm) {
   if(elm !== null && elm !== undefined)
@@ -122,6 +108,29 @@ function exist(elm) {
   return false;
 }
 
+
+function createPublicLink(fileId, callback) {
+  $.ajax({
+    url: OC.generateUrl(`apps/nextembed/api/0.1/tokenizeFile/${fileId}`),
+    method: 'GET',     
+    dataType: 'json',
+    headers: {
+      'OCS-APIREQUEST': true,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    success: function(response) {
+      if (response.fileToken) {
+        callback(response.fileToken);
+      } else {
+        console.error('Failed to create public link:', response);
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error('Error creating public link:', error);
+    }
+  });
+}
+
 function nextembed_close_popup() {
-  $('.nextembed_popup').hide().find('textarea').val('');
+  $('.nextembed_popup').hide();
 }

@@ -100,16 +100,14 @@ try {
 
     function generatePreviewImages($filePath, $deletePreview = false) {
         $previewBase64 = [];
-        
+
         // Usa finfo per ottenere il tipo MIME del file
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->file($filePath);
-    
         // Gestione dei file PDF
         if ($mimeType === 'application/pdf') {
-            $pdf = new \Imagick($filePath);
+            $pdf = new Imagick($filePath);
             $pdf->setResolution(600, 600); // Imposta una risoluzione più alta
-    
             foreach ($pdf as $i => $page) {
                 $page->setImageFormat('png'); // Usa PNG per la qualità
                 $page->setResolution(600,600);

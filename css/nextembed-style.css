@@ -66,3 +66,8 @@
     height: 30px;
     cursor:pointer;
 }
+
+.nextembed-btn {
+    background-color: transparent;
+    border: 0px;
+}
