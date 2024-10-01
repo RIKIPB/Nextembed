@@ -4,7 +4,13 @@ SPDX-License-Identifier: CC0-1.0
 -->
 
 # Nextembed
-The Nextembed app for Nextcloud allows users to generate embed codes for their files, making it easy to share content across other websites. With this app, you can create custom embed codes for images, videos, and documents hosted on your Nextcloud instance. This feature enables seamless integration and display of Nextcloud files on external sites without requiring user authentication. Ideal for sharing media and documents publicly or within restricted environments
+The Nextembed is concept/InDev app a for Nextcloud, it allows users to generate embed codes for their files, making it easy to share content across other websites. With this app, you can create custom embed codes for images, videos, and documents hosted on your Nextcloud instance. This feature enables seamless integration and display of Nextcloud files on external sites without requiring user authentication. Ideal for sharing media and documents publicly or within restricted environments. Its current status is "in development", it has been tested on Ubuntu machine and Nextcloud 29 Beta channel
+
+## How does it works?
+Nextembed generates a PDF preview of the file you intend to embed on your website, this allows you to protect the actual file from being shared online by creating a copy of it and to be able to freely display it on other sites.
+
+## Requiremets
+The plugin require that you install `"libreoffice-common"` in your server, you can use this commmand: `sudo apt install libreoffice-common`
 
 ## Installation
 
@@ -16,7 +22,7 @@ Right click a file and select 'Get Embed Code' from the context menu to copy Emb
 
 -------------------------------------------------------------------------
 
-## Building the app
+## Building the app (Optional)
 
 The app can be built by using the provided Makefile by running:
 
